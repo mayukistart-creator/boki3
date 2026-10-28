@@ -111,6 +111,8 @@
 
   // ===== 小道具 =====
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // 「さくら銀行−普通預金」のような長い科目名は「−」の後ろで改行する
+  const acctLabel = (a) => esc(a).replace("−", "−<br>");
   const yen = (n) => n.toLocaleString("ja-JP");
   const pct = (correct, total) => (total ? Math.round((correct / total) * 100) : 0);
   const unique = (arr) => [...new Set(arr)];
@@ -548,7 +550,7 @@
         <table class="answer-table"><thead><tr><th>借方科目</th><th style="text-align:right">金額</th><th>貸方科目</th><th style="text-align:right">金額</th></tr></thead><tbody>
         ${Array.from({ length: Math.max(q.debit.length, q.credit.length) }, (_, i) => {
           const d = q.debit[i]; const c = q.credit[i];
-          return `<tr><td>${d ? esc(d[0]) : ""}</td><td class="amt">${d ? yen(d[1]) : ""}</td><td>${c ? esc(c[0]) : ""}</td><td class="amt">${c ? yen(c[1]) : ""}</td></tr>`;
+          return `<tr><td>${d ? acctLabel(d[0]) : ""}</td><td class="amt">${d ? yen(d[1]) : ""}</td><td>${c ? acctLabel(c[0]) : ""}</td><td class="amt">${c ? yen(c[1]) : ""}</td></tr>`;
         }).join("")}</tbody></table>` : "";
       feedback = `
         <div class="verdict ${ui.correct ? "ok" : "ng"}" role="status"><span class="mk">${ui.correct ? "○" : "×"}</span>${ui.correct ? "正解" : "不正解"}</div>
@@ -587,12 +589,12 @@
       if (fb) cls += ui.marks[i] ? " ok" : " ng";
       else if (ui.sel === i) cls += " sel";
       else if (s.account) cls += " filled";
-      const acct = s.account ? `<span class="acct">${esc(s.account)}</span>` : '<span class="acct empty">科目を選ぶ</span>';
+      const acct = s.account ? `<span class="acct">${acctLabel(s.account)}</span>` : '<span class="acct empty">科目を選ぶ</span>';
       return `<button class="${cls}" data-act="slot" data-i="${i}" ${fb ? "disabled" : ""} aria-label="${side === "debit" ? "借方" : "貸方"} ${yen(s.amount)}円 ${s.account || "未選択"}">${acct}<span class="amt">${yen(s.amount)}</span></button>`;
     }).join("");
     const chips = fb ? "" : `
       <p class="hint">欄を選んでから、科目をタップしてください。</p>
-      <div class="chips">${ui.accounts.map((a) => `<button class="chip" data-act="acct" data-a="${esc(a)}">${esc(a)}</button>`).join("")}</div>`;
+      <div class="chips">${ui.accounts.map((a) => `<button class="chip" data-act="acct" data-a="${esc(a)}">${acctLabel(a)}</button>`).join("")}</div>`;
     return `
       <div class="je">
         <div class="je-col"><div class="je-h">借方</div>${slotHtml("debit")}</div>
