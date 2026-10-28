@@ -111,8 +111,16 @@
 
   // ===== 小道具 =====
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  // 「さくら銀行−普通預金」のような長い科目名は「−」の後ろで改行する
-  const acctLabel = (a) => esc(a).replace("−", "−<br>");
+  // 長い科目名は、狭い場所（選択肢・解答の表）で読みやすい位置で改行する
+  //   「さくら銀行−普通預金」→「−」の後ろ、「固定資産売却益」→「固定資産／売却益」
+  const ACCT_BREAK = { "貸倒引当金繰入": 5, "貸倒引当金戻入": 5, "法人税、住民税及び事業税": 7 };
+  const acctLabel = (a) => {
+    if (a.includes("−")) return esc(a).replace("−", "−<br>");
+    const cut = ACCT_BREAK[a] || (a.length >= 7 ? a.length - 3 : 0);
+    return cut ? `${esc(a.slice(0, cut))}<br>${esc(a.slice(cut))}` : esc(a);
+  };
+  // 解答欄は幅が広いので、「−」のある科目名だけ改行する
+  const slotLabel = (a) => esc(a).replace("−", "−<br>");
   const yen = (n) => n.toLocaleString("ja-JP");
   const pct = (correct, total) => (total ? Math.round((correct / total) * 100) : 0);
   const unique = (arr) => [...new Set(arr)];
@@ -589,7 +597,7 @@
       if (fb) cls += ui.marks[i] ? " ok" : " ng";
       else if (ui.sel === i) cls += " sel";
       else if (s.account) cls += " filled";
-      const acct = s.account ? `<span class="acct">${acctLabel(s.account)}</span>` : '<span class="acct empty">科目を選ぶ</span>';
+      const acct = s.account ? `<span class="acct">${slotLabel(s.account)}</span>` : '<span class="acct empty">科目を選ぶ</span>';
       return `<button class="${cls}" data-act="slot" data-i="${i}" ${fb ? "disabled" : ""} aria-label="${side === "debit" ? "借方" : "貸方"} ${yen(s.amount)}円 ${s.account || "未選択"}">${acct}<span class="amt">${yen(s.amount)}</span></button>`;
     }).join("");
     const chips = fb ? "" : `
