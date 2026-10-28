@@ -34,7 +34,7 @@ const CHAPTERS = [
     { id: "6-2", title: "取得と売却", page: 154 },
     { id: "6-3", title: "修理", page: 162 },
   ] },
-  { no: 7, title: "資金の貸借", sections: [
+  { no: 7, title: "資金の賃貸借", sections: [
     { id: "7-1", title: "貸し付け・借り入れ", page: 166 },
   ] },
   { no: 8, title: "給料に関連した取引", sections: [
