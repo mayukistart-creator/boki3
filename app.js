@@ -42,6 +42,7 @@
       DATA_WARNINGS.push(`${where}：type は "journal" か "choice" にしてください`);
       return;
     }
+    if (q.table && !Array.isArray(q.table.rows)) { DATA_WARNINGS.push(`${where}：table には rows（行の配列）が必要です`); return; }
     Q_BY_ID[q.id] = q;
     (Q_BY_SECTION[q.section] ||= []).push(q);
   });
@@ -584,9 +585,22 @@
       <div class="bar thin" style="margin:2px 0 8px"><span style="width:${pct(num, total)}%"></span></div>
       <p class="qmeta">${meta}</p>
       <div class="qtext">${esc(q.text)}</div>
+      ${q.table ? tableHtml(q.table) : ""}
       ${body}
       ${feedback}`;
     return { html, dock, tab: null };
+  }
+
+  // 問題文の下に出す小さな表（questions.js の table: { head: [...], rows: [[...], ...] }）
+  // 数字だけの列（¥400、30個、@¥250 など）は右寄せにする
+  const NUM_CELL = /^[@＠¥△−\-\d,.]+(個|円)?$/;
+  function tableHtml(t) {
+    const cols = Math.max(t.head ? t.head.length : 0, ...t.rows.map((r) => r.length));
+    const isNum = Array.from({ length: cols }, (_, c) => t.rows.every((r) => NUM_CELL.test(String(r[c] ?? ""))));
+    const cls = (c) => (isNum[c] ? ' class="num"' : "");
+    const head = t.head ? `<thead><tr>${t.head.map((h, c) => `<th${cls(c)}>${esc(h)}</th>`).join("")}</tr></thead>` : "";
+    const body = t.rows.map((r) => `<tr>${r.map((v, c) => `<td${cls(c)}>${esc(v)}</td>`).join("")}</tr>`).join("");
+    return `<div class="qtable-box"><table class="qtable">${head}<tbody>${body}</tbody></table></div>`;
   }
 
   function journalHtml(q) {

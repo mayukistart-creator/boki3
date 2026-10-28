@@ -261,6 +261,12 @@ h2 { font-size: 17px; margin: 0 0 8px; }
 .qtop .count { font-size: 15px; color: var(--text-2); font-variant-numeric: tabular-nums; }
 .qmeta { font-size: 13px; color: var(--text-2); margin: 0 0 8px; }
 .qtext { font-size: 17px; line-height: 1.75; margin: 16px 0 16px; }
+.qtable-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px 10px; margin: -4px 0 16px; }
+.qtable { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.qtable th { font-size: 12px; font-weight: 600; color: var(--text-2); text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--border-strong); }
+.qtable td { padding: 7px 4px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.qtable tr:last-child td { border-bottom: none; }
+.qtable .num { text-align: right; white-space: nowrap; }
 .tag { display: inline-block; font-size: 12px; padding: 0 8px; border-radius: 6px; background: var(--surface-2); color: var(--text-2); margin-bottom: 6px; }
 
 .je { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
